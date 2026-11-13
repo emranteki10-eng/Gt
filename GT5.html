@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GLTR 2012: Global Trends - Interactive Final Examination</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f7ff',
+                            100: '#e0effe',
+                            500: '#2563eb',
+                            600: '#1d4ed8',
+                            700: '#1e40af',
+                            800: '#1e3a8a',
+                            900: '#0f172a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col antialiased selection:bg-brand-500 selection:text-white">
+
+    <!-- Top Header -->
+    <header class="bg-brand-900 text-white border-b border-brand-800 sticky top-0 z-50 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="bg-brand-500 text-white p-2 rounded-lg font-bold text-lg leading-none shadow-sm">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-base sm:text-lg leading-tight tracking-tight">GLTR 2012: Global Trends</h1>
+                    <p class="text-xs text-slate-400 hidden sm:block">Department of Governance & Development Studies — Chapter 1 Final Exam</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-3">
+                <button id="toggle-mode-btn" onclick="toggleViewMode()" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition flex items-center gap-2">
+                    <i class="fa-solid fa-list-check"></i>
+                    <span id="view-mode-label">Switch to Full List</span>
+                </button>
+                <div class="bg-slate-800/80 border border-slate-700 rounded-lg px-3 py-1 text-center">
+                    <span class="text-[10px] text-slate-400 uppercase tracking-wider block">Score</span>
+                    <span id="score-header" class="text-sm font-bold text-emerald-400">0 / 50</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        <!-- Left Column: Navigation Sidebar & Statistics (Desktop) -->
+        <aside class="lg:col-span-4 xl:col-span-3 space-y-6">
+            <!-- Progress Card -->
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                <h2 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Examination Progress</h2>
+                <div class="flex items-end justify-between mb-2">
+                    <span id="progress-percent" class="text-3xl font-extrabold text-brand-900">0%</span>
+                    <span id="progress-count" class="text-xs font-medium text-slate-500">0 of 50 answered</span>
+                </div>
+                <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+                    <div id="progress-bar" class="bg-brand-500 h-2.5 rounded-full transition-all duration-300 w-0"></div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3 mt-5 pt-4 border-t border-slate-100 text-center">
+                    <div class="bg-emerald-50 p-2.5 rounded-xl border border-emerald-100">
+                        <span class="text-xs font-semibold text-emerald-700 block">Correct</span>
+                        <span id="correct-counter" class="text-xl font-bold text-emerald-800">0</span>
+                    </div>
+                    <div class="bg-rose-50 p-2.5 rounded-xl border border-rose-100">
+                        <span class="text-xs font-semibold text-rose-700 block">Incorrect</span>
+                        <span id="incorrect-counter" class="text-xl font-bold text-rose-800">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question Jump Matrix -->
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                <div class="flex items-center justify-between mb-3">
+                    <h2 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Question Navigator</h2>
+                    <span class="text-[11px] text-slate-400">Click to Jump</span>
+                </div>
+                <div id="question-matrix" class="grid grid-cols-5 gap-1.5 max-h-60 overflow-y-auto custom-scrollbar p-1">
+                    <!-- Dynamic Question Buttons Generated via JS -->
+                </div>
+            </div>
+
+            <!-- Actions Card -->
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+                <button onclick="submitExam()" class="w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl shadow-sm hover:shadow transition text-sm flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-circle-check"></i>
+                    Finish & Submit Exam
+                </button>
+                <button onclick="resetQuiz()" class="w-full py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl transition text-xs flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-rotate-right"></i>
+                    Restart Examination
+                </button>
+            </div>
+        </aside>
+
+        <!-- Right Column: Active Question View or Full List View -->
+        <section class="lg:col-span-8 xl:col-span-9">
+            
+            <!-- Single Question Container -->
+            <div id="single-view-container" class="space-y-6">
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden min-h-[480px] flex flex-col justify-between">
+                    
+                    <!-- Question Header & Statement -->
+                    <div class="p-6 sm:p-8">
+                        <div class="flex items-center justify-between gap-4 mb-4">
+                            <span id="q-badge" class="px-3 py-1 bg-brand-50 text-brand-700 border border-brand-100 font-bold text-xs rounded-full">
+                                Question 1 of 50
+                            </span>
+                            <span id="q-topic-tag" class="text-xs font-medium text-slate-400 flex items-center gap-1.5">
+                                <i class="fa-solid fa-book-bookmark text-brand-500"></i>
+                                Chapter 1: Foundations
+                            </span>
+                        </div>
+
+                        <h2 id="q-text" class="text-lg sm:text-xl font-bold text-slate-900 leading-relaxed mb-6">
+                            Loading question text...
+                        </h2>
+
+                        <!-- Options Container -->
+                        <div id="q-options" class="space-y-3">
+                            <!-- Dynamic Radio Buttons/Options -->
+                        </div>
+
+                        <!-- Feedback & Explanation Box -->
+                        <div id="explanation-box" class="hidden mt-6 p-5 rounded-xl border text-sm leading-relaxed transition-all">
+                            <div class="flex items-center gap-2 font-bold mb-2" id="explanation-status">
+                                <!-- Icon and status text -->
+                            </div>
+                            <p id="explanation-text" class="text-slate-700"></p>
+                        </div>
+                    </div>
+
+                    <!-- Question Footer / Controls -->
+                    <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
+                        <button id="prev-btn" onclick="navigateQuestion(-1)" class="px-4 py-2 bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 font-medium rounded-xl text-sm transition flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed">
+                            <i class="fa-solid fa-chevron-left text-xs"></i> Previous
+                        </button>
+
+                        <div class="flex items-center gap-2">
+                            <button id="check-btn" onclick="checkCurrentAnswer()" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white font-medium rounded-xl text-sm transition shadow-sm">
+                                Confirm Choice
+                            </button>
+                            <button id="next-btn" onclick="navigateQuestion(1)" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-medium rounded-xl text-sm transition flex items-center gap-2">
+                                Next <i class="fa-solid fa-chevron-right text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Full Exam List Container (Hidden by default) -->
+            <div id="full-view-container" class="hidden space-y-6">
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm mb-6 flex items-center justify-between">
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-900">Full Examination Mode</h2>
+                        <p class="text-xs text-slate-500">Scroll through all 50 questions, make your choices, and submit when ready.</p>
+                    </div>
+                    <button onclick="submitExam()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs rounded-xl shadow-sm transition">
+                        Submit All Answers
+                    </button>
+                </div>
+                <div id="full-list-wrapper" class="space-y-6">
+                    <!-- Dynamic Full Question Cards -->
+                </div>
+            </div>
+
+            <!-- Summary Results Modal / Card -->
+            <div id="results-card" class="hidden bg-white p-8 rounded-2xl border border-slate-200 shadow-lg text-center space-y-6">
+                <div class="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-3xl shadow-inner">
+                    <i class="fa-solid fa-award"></i>
+                </div>
+                <div>
+                    <h2 class="text-2xl font-extrabold text-slate-900">Examination Completed!</h2>
+                    <p class="text-sm text-slate-500 mt-1">Global Trends (GLTR 2012) — Chapter 1 Assessment</p>
+                </div>
+
+                <div class="max-w-md mx-auto grid grid-cols-3 gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                    <div>
+                        <span class="text-xs text-slate-400 uppercase font-semibold block">Total Score</span>
+                        <span id="final-score" class="text-2xl font-black text-brand-700">0/50</span>
+                    </div>
+                    <div>
+                        <span class="text-xs text-slate-400 uppercase font-semibold block">Percentage</span>
+                        <span id="final-percent" class="text-2xl font-black text-slate-800">0%</span>
+                    </div>
+                    <div>
+                        <span class="text-xs text-slate-400 uppercase font-semibold block">Grade Status</span>
+                        <span id="final-status" class="text-2xl font-black text-emerald-600">PASS</span>
+                    </div>
+                </div>
+
+                <p id="performance-feedback" class="text-sm text-slate-600 italic max-w-lg mx-auto">
+                    Review your answers below to verify your conceptual understanding of International Relations.
+                </p>
+
+                <div class="flex items-center justify-center gap-4 pt-4 border-t border-slate-100">
+                    <button onclick="reviewExamAnswers()" class="px-5 py-2.5 bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold rounded-xl transition shadow-sm">
+                        Review Answer Explanations
+                    </button>
+                    <button onclick="resetQuiz()" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold rounded-xl transition">
+                        Retake Examination
+                    </button>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- Quiz Logic & Question Dataset -->
+    <script>
+        // 50 Exam Questions Dataset directly from PowerPoint Chapter 1 Content
+        const questionsData = [
+            {
+                id: 1,
+                question: "Which of the following historical developments most fundamentally transformed the 18th-century European state into a 'nation-state'?",
+                options: [
+                    "A) The signing of the Treaty of Westphalia in 1648, which completely abolished religious governance across all European territories.",
+                    "B) The combination of a centralized political authority with a shared community identity, popularized by the revolutions in Britain’s North American colonies and France.",
+                    "C) The absolute shift from a unipolar international power distribution to a strict bipolar system following the Napoleonic Wars.",
+                    "D) The institutionalization of multinational corporations (MNCs) and non-governmental organizations as primary actors over sovereign governments."
+                ],
+                answer: 1, // B (0-indexed)
+                explanation: "At the end of the 18th century, the state was radically transformed when combined with a nation to form the 'nation-state,' modeled closely after the revolutions in Britain's North American colonies (1776) and France (1789)."
+            },
+            {
+                id: 2,
+                question: "In the context of the conceptual differences between a 'nation' and a 'state,' which statement is most accurate according to Chapter One?",
+                options: [
+                    "A) A state requires a shared ethnic language and homogenous cultural myths, whereas a nation is solely an organized political bureaucracy under one government.",
+                    "B) A nation constitutes a community of people joined by a shared identity and common social practices, whereas a state is an organized political community under one government.",
+                    "C) A nation and a state are entirely synonymous terms, both requiring formal international legal recognition and sovereign military apparatuses.",
+                    "D) A state is defined strictly by voluntary psychological attachment, whereas a nation exercises a monopoly on legitimate physical coercion within a defined territory."
+                ],
+                answer: 1, // B
+                explanation: "The text explicitly differentiates them: a nation constitutes a community of people joined by a shared identity and common social practices, in contrast to a state, which is an organized political community under one government."
+            },
+            {
+                id: 3,
+                question: "How did the philosophical views of Thomas Hobbes and John Locke fundamentally diverge regarding human nature and the state of society?",
+                options: [
+                    "A) Hobbes viewed humans as innately cooperative and peaceful, whereas Locke argued that human life in a natural state is solitary, poor, nasty, brutish, and short.",
+                    "B) Hobbes believed sociability was the strongest bond among equal men, whereas Locke claimed that international politics is exclusively a zero-sum game of survival.",
+                    "C) Hobbes interpreted the state of society to be characterized by continual fear and danger of violent death, whereas Locke took a more optimistic view that men were equal, sociable, and free.",
+                    "D) Hobbes and Locke both agreed that anarchy could only be resolved through the immediate abolition of sovereign state actors in favor of global structuralism."
+                ],
+                answer: 2, // C
+                explanation: "The slides contrast Hobbes (continual fear, danger of violent death; life is solitary, poor, nasty, brutish, and short) with Locke (optimistic view, sociability is the strongest bond, men equal, sociable, and free)."
+            },
+            {
+                id: 4,
+                question: "Why does the study of International Relations (IR) assert that no state is truly self-sufficient?",
+                options: [
+                    "A) Because international law legally mandates that all sovereign countries must surrender at least 50 percent of their annual GDP to intergovernmental organizations.",
+                    "B) Because inherent gaps in political, economic, social, security, and environmental areas at the domestic level characterize all countries, necessitating external relations.",
+                    "C) Because global anarchy prevents any single government from establishing a permanent standing army or domestic police force.",
+                    "D) Because multinational corporations (MNCs) hold exclusive ownership over global natural resources, forcing states to negotiate for basic survival."
+                ],
+                answer: 1, // B
+                explanation: "Sovereign states need IR because there is no single state that is self-sufficient, and domestic gaps in political, economic, social, security, and environmental areas characterize all countries."
+            },
+            {
+                id: 5,
+                question: "The academic discipline of International Relations as a specialized branch of political science first emerged prominently in which country and following which historical milestone?",
+                options: [
+                    "A) Great Britain, following the signing of the Peace of Westphalia in 1648.",
+                    "B) The United States, with the advent of the First World War (1914–1918) and the formation of the League of Nations (1919).",
+                    "C) France, immediately after the overthrow of the old regime during the Revolution of 1789.",
+                    "D) Ancient Greece, stemming from the historical analysis of the wars between Greek city-states."
+                ],
+                answer: 1, // B
+                explanation: "While historical IR practices date back to ancient Greek and Italian city-states, political science specializing in IR appeared in the United States with the advent of WWI and the formation of the League of Nations (1919)."
+            },
+            {
+                id: 6,
+                question: "Which of the following best characterizes the European political landscape prior to the Peace of Westphalia in 1648?",
+                options: [
+                    "A) A strict system of sovereign, secular, and formally equal nation-states operating under international law.",
+                    "B) A vaguely hierarchical religious order where political authorities were non-secular and medieval organizations lacked modern state sovereignty.",
+                    "C) A bipolar system dominated exclusively by two secular superpowers engaging in zero-sum Cold War politics.",
+                    "D) A globalized economy driven entirely by multinational corporations and international non-governmental organizations (INGOs)."
+                ],
+                answer: 1, // B
+                explanation: "Before Westphalia (1648), the European medieval organization of political authorities was based on a vaguely hierarchical religious order where governments were non-secular."
+            },
+            {
+                id: 7,
+                question: "The Treaty of Westphalia (1648), which concluded the Thirty Years' War, symbolized a profound shift in international politics primarily because:",
+                options: [
+                    "A) It established the United Nations to regulate global economic markets and prevent nuclear proliferation.",
+                    "B) It established that international politics was strictly a matter of relations between sovereign, formally equal states with exclusive rights to rule their territories.",
+                    "C) It permanently dissolved all religious institutions and mandated global adherence to liberal democratic values.",
+                    "D) It introduced constructivism as the dominant theoretical framework for analyzing global norms."
+                ],
+                answer: 1, // B
+                explanation: "Westphalia established that international politics was a matter of relations between states, all of which were sovereign (exclusive right to rule their territories) and formally equal with identical rights and obligations."
+            },
+            {
+                id: 8,
+                question: "In the structural classification of non-state actors, how are Intergovernmental Organizations (IGOs) primarily defined?",
+                options: [
+                    "A) Non-profit private organizations that engage exclusively in localized humanitarian advocacy and charity work.",
+                    "B) Business enterprises that engage in Foreign Direct Investments (FDI) across multiple national borders.",
+                    "C) Institutions with membership drawn from two or more countries whose members are national governments.",
+                    "D) Informal networks of global opinion leaders who influence domestic public policy through social media movements."
+                ],
+                answer: 2, // C
+                explanation: "IGOs are institutions with membership drawn from two or more countries, specifically organizations whose members are national governments (e.g., UN)."
+            },
+            {
+                id: 9,
+                question: "When analyzing international relations, a researcher who focuses primarily on the psychological mindsets, perceptions, misperceptions, and communication patterns of key political leaders is operating at which level of analysis?",
+                options: [
+                    "A) The system level",
+                    "B) The state level",
+                    "C) The group level",
+                    "D) The individual level"
+                ],
+                answer: 3, // D
+                explanation: "The individual level of analysis focuses on individual decision-makers, emphasizing perceptions, misperceptions, communication, and the particular mindsets of political leaders."
+            },
+            {
+                id: 10,
+                question: "If an analyst examines international phenomena by treating the global system as the overarching structure—focusing heavily on power distribution (e.g., unipolarity or bipolarity)—which level of analysis is being utilized?",
+                options: [
+                    "A) The group level, because it evaluates lobbying pressures within global coalitions.",
+                    "B) The individual level, because global structures are merely the sum of individual human choices.",
+                    "C) The system level, because it adopts a 'top-down' approach where systemic characteristics determine state behavior.",
+                    "D) The state level, because the state remains the absolute framework encapsulating domestic society."
+                ],
+                answer: 2, // C
+                explanation: "System-level analysis examines state behavior by looking at the international system as a 'top-down' approach, where structural power distribution conditions state action."
+            },
+            {
+                id: 11,
+                question: "The enduring focus of mainstream international relations literature on the state as the dominant unit of analysis and primary arena for political actors is known as:",
+                options: [
+                    "A) Relative state-centrism",
+                    "B) Transnational structuralism",
+                    "C) Democratic idealism",
+                    "D) Constructivist norm-building"
+                ],
+                answer: 0, // A
+                explanation: "The slides state that the enduring focus on the state and state level of analysis is referred to as the 'relative state-centrism' of the discipline."
+            },
+            {
+                id: 12,
+                question: "Which system structure is described as being most vulnerable to zero-sum game politics, where a gain for one superpower inevitably results in a loss for the other?",
+                options: [
+                    "A) A multipolar system",
+                    "B) A unipolar system",
+                    "C) A bipolar system",
+                    "D) An anarchic system without states"
+                ],
+                answer: 2, // C
+                explanation: "Bipolar systems feature two dominant superpowers where less powerful states join either alliance, creating zero-sum politics (when one gains, the other loses, as in the Cold War)."
+            },
+            {
+                id: 13,
+                question: "Historically, which structural system of international power has been the most common throughout world history and was typical around World War I?",
+                options: [
+                    "A) Uni-polar system",
+                    "B) Bipolar system",
+                    "C) Multipolar system",
+                    "D) Stateless anarchic system"
+                ],
+                answer: 2, // C
+                explanation: "The presentation notes that a multipolar system is the most common throughout history and was a typical world system around the period of World War I."
+            },
+            {
+                id: 14,
+                question: "In international relations, Hans Morgenthau—a famous realist thinker—argued that 'power is the blood line of international relations' primarily because:",
+                options: [
+                    "A) Power can be precisely quantified exclusively through economic GDP without factoring in military capabilities.",
+                    "B) International politics, like all other politics, is fundamentally a struggle for power, which determines relative influence and shapes systemic structure.",
+                    "C) Power is an illusion created by international organizations to suppress non-state actors.",
+                    "D) Power is entirely irrelevant in a constructivist framework where norms supersede material capabilities."
+                ],
+                answer: 1, // B
+                explanation: "Hans Morgenthau argued that international politics is a struggle for power, which determines the relative influence of actors and shapes the international structure."
+            },
+            {
+                id: 15,
+                question: "How is 'anarchy' specifically defined in relations between sovereign states, distinguishing it from domestic civil breakdown?",
+                options: [
+                    "A) A total absence of any human population or territorial boundaries within a continent.",
+                    "B) A system where power is decentralized and there are no shared institutions with the right to enforce common rules.",
+                    "C) A condition where multinational corporations completely replace national governments.",
+                    "D) A utopian state of absolute cooperation and universal peace."
+                ],
+                answer: 1, // B
+                explanation: "While domestic anarchy means breakdown of law and order, anarchy between states refers to a system where power is decentralized and there are no shared institutions with enforcement authority."
+            },
+            {
+                id: 16,
+                question: "State sovereignty entails a 'double claim' by states from the international system. What are these two core dimensions?",
+                options: [
+                    "A) Financial dominance in global trade and absolute cultural supremacy over neighboring populations.",
+                    "B) Ultimate authority within its territorial entity (internal sovereignty) and involvement/independence in the international community (external sovereignty).",
+                    "C) The legal right to dissolve international organizations and the obligation to practice economic autarky.",
+                    "D) Total military immunity from foreign invasion and the exclusive right to issue multinational currencies."
+                ],
+                answer: 1, // B
+                explanation: "Sovereignty denotes double claims: internal sovereignty (ultimate authority within territory) and external sovereignty (autonomy in foreign policy and independence in domestic affairs)."
+            },
+            {
+                id: 17,
+                question: "Why was early liberal internationalism in IR (1919–1930s) frequently criticized or labeled as 'utopian'?",
+                options: [
+                    "A) Because its proponents viewed human beings as innately good and believed peace and harmony between nations were achievable and desirable through institution-building.",
+                    "B) Because it insisted that eternal conflict and war are biologically inherent human traits.",
+                    "C) Because it completely rejected the creation of international law and collective security.",
+                    "D) Because it argued that economic classes determine all political structures."
+                ],
+                answer: 0, // A
+                explanation: "Liberalism was referred to as utopian because its proponents view human beings as innately good and believe peace/harmony between nations are achievable and desirable."
+            },
+            {
+                id: 18,
+                question: "Which of the following principles is central to Immanuel Kant’s 'democratic peace theory' as adopted by liberal IR theorists?",
+                options: [
+                    "A) Democracies inevitably initiate preemptive wars against autocratic states to spread institutional values.",
+                    "B) Shared liberal values ensure that democracies have no reason to go to war with one another.",
+                    "C) Economic autarky is the sole guarantor of perpetual peace and state self-sufficiency.",
+                    "D) Collective security systems must be replaced by balance-of-power military alliances."
+                ],
+                answer: 1, // B
+                explanation: "Democratic peace theory states that shared liberal values mean democracies should have no reason for going to war against one another."
+            },
+            {
+                id: 19,
+                question: "The establishment of which historical institution served as the ultimate culmination of the liberal ideal following World War I?",
+                options: [
+                    "A) The North Atlantic Treaty Organization (NATO)",
+                    "B) The International Court of Justice (ICJ)",
+                    "C) The League of Nations",
+                    "D) The World Trade Organization (WTO)"
+                ],
+                answer: 2, // C
+                explanation: "The slides state that the creation of the League of Nations after WWI was the culmination of the liberal ideal of IR."
+            },
+            {
+                id: 20,
+                question: "Regarding the status of international law, which of the following represents one of the competing views outlined in the presentation?",
+                options: [
+                    "A) International law is universally recognized as a supreme global constitution with direct enforcement mechanisms.",
+                    "B) International law is not a law at all, but merely a branch of international morality.",
+                    "C) International law is strictly an instrument used by corporate entities to bypass state sovereignty.",
+                    "D) International law has no historical precedent prior to the 21st century."
+                ],
+                answer: 1, // B
+                explanation: "The slides outline three views: 1) International law is not a law at all but a branch of international morality, 2) It is a law in all senses, 3) It is a matter of definition."
+            },
+            {
+                id: 21,
+                question: "When did Realism gain significant theoretical momentum and dominance within the study of international relations?",
+                options: [
+                    "A) During the Enlightenment period of the 18th century.",
+                    "B) During the Second World War.",
+                    "C) Following the establishment of the League of Nations in 1919.",
+                    "D) With the rise of constructivism in the post-Cold War era."
+                ],
+                answer: 1, // B
+                explanation: "The course material notes that Realism gained momentum during the Second World War."
+            },
+            {
+                id: 22,
+                question: "Which core assumption distinguishes Realism from Liberalism regarding conflict and human nature?",
+                options: [
+                    "A) Realists believe human nature is innately good and structural cooperation will eliminate war.",
+                    "B) Realists view conflict as unavoidable and continuous, asserting that politics is primarily about domination and state survival.",
+                    "C) Realists argue that international organizations are the primary actors capable of maintaining global harmony.",
+                    "D) Realists maintain that economic class struggle is the root cause of all international friction."
+                ],
+                answer: 1, // B
+                explanation: "Realists view human nature as self-interested/selfish, conflict as unavoidable and continuous, and politics primarily about domination and state survival."
+            },
+            {
+                id: 23,
+                question: "How do Liberals and Realists differ in their worldview regarding peace and world order?",
+                options: [
+                    "A) Liberals hold a pessimistic view where peace is achieved through war preparation, whereas Realists hold an optimistic view.",
+                    "B) Liberals hold an optimistic view that world order can be improved and war gradually replaced, whereas Realists hold a pessimistic view that war is common and peace requires preparing for conflict.",
+                    "C) Both schools agree that non-state actors hold ultimate power over sovereign governments.",
+                    "D) Both schools reject the concept of anarchy in favor of a centralized global government."
+                ],
+                answer: 1, // B
+                explanation: "Liberals have an optimistic view (world order can be improved, peace replacing war) while Realists have a pessimistic view (war is common, peace is achieved by preparing for future conflict)."
+            },
+            {
+                id: 24,
+                question: "In terms of participation in International Organizations (IOs), how do Realist and Liberal perspectives contrast?",
+                options: [
+                    "A) Realists believe states partake in IOs only when it is strictly in their self-interest to do so, whereas Liberals see IOs as assisting states in formalizing decision-making and cooperation.",
+                    "B) Liberals reject IOs as useless institutions, whereas Realists view IOs as superior to nation-states.",
+                    "C) Realists argue that IOs are run by the working class, whereas Liberals argue they are run by MNCs.",
+                    "D) There is no theoretical difference between Realist and Liberal views on international organizations."
+                ],
+                answer: 0, // A
+                explanation: "Liberals view IOs as assisting states and formalizing cooperation, while Realists argue states partake in IOs only when aligned with self-interest."
+            },
+            {
+                id: 25,
+                question: "Structuralism, or Marxism, asserts that the conduct of world politics is fundamentally determined by:",
+                options: [
+                    "A) The psychological misperceptions and communication gaps of individual political leaders.",
+                    "B) The anarchic distribution of military power among sovereign nation-states.",
+                    "C) The way the world is organized economically, dividing society into the bourgeoisie (business class) and the proletariat (working class).",
+                    "D) The evolution of shared international norms, ideas, and constructivist belief systems."
+                ],
+                answer: 2, // C
+                explanation: "Structuralism/Marxism argues economic structure determines politics, dividing capitalist society into the bourgeoisie and proletariat."
+            },
+            {
+                id: 26,
+                question: "From a structuralist/Marxist viewpoint, how is the global geopolitical landscape categorized in terms of economic power?",
+                options: [
+                    "A) Into democratic states and autocratic rogue regimes.",
+                    "B) Into 'Haves' (Economically Developed Countries) and 'Have nots' (Least Developed Countries/weak/poor).",
+                    "C) Into unipolar superpowers and multipolar regional middle powers.",
+                    "D) Into secular governance structures and religious hierarchical orders."
+                ],
+                answer: 1, // B
+                explanation: "Structuralists contend the world is divided between 'Haves' (developed countries) and 'Have nots' (least developed/poor countries)."
+            },
+            {
+                id: 27,
+                question: "Constructivism is described in IR theory as:",
+                options: [
+                    "A) A radical Marxist framework calling for the immediate violent overthrow of the state system.",
+                    "B) A middle-ground theory between mainstream and critical theories.",
+                    "C) An extreme realist doctrine that denies the existence of international norms.",
+                    "D) A utopian idealist movement that treats human nature as exclusively evil."
+                ],
+                answer: 1, // B
+                explanation: "The slides explicitly identify Constructivism as a 'middle ground theory between mainstream and critical theories'."
+            },
+            {
+                id: 28,
+                question: "Which core proposition defines the constructivist approach to international relations?",
+                options: [
+                    "A) Material military capability is the sole determinant of state action.",
+                    "B) The international system is created by a set of ideas, a body of thought, and a system of norms arranged by people at a particular time and place.",
+                    "C) Anarchy is an objective, immutable physical law of nature that forces states into conflict.",
+                    "D) Economic exploitation by multinational corporations dictates every aspect of domestic culture."
+                ],
+                answer: 1, // B
+                explanation: "Constructivism argues that the international system is created by ideas, thoughts, and norms arranged by people, giving ideas power in IR."
+            },
+            {
+                id: 29,
+                question: "Alexander Wendt’s constructivist maxim, 'anarchy is what states make of it,' implies that:",
+                options: [
+                    "A) Anarchy does not exist because a centralized global government already enforces international law.",
+                    "B) IR exists in the interactions between individuals or agents on the global stage, meaning anarchy has no fixed, inevitable outcome.",
+                    "C) States are inherently evil and will always engage in zero-sum warfare regardless of social interaction.",
+                    "D) Economic structures alone dictate whether an anarchic system results in peace or conflict."
+                ],
+                answer: 1, // B
+                explanation: "Constructivism maintains anarchy is what states make of it because IR exists in social interactions between agents on the global stage."
+            },
+            {
+                id: 30,
+                question: "Critical theories were established in response to which theoretical traditions, and what is their stance on the state?",
+                options: [
+                    "A) Response to Realism and Liberalism; they call for questioning and ultimately dissolving the legitimacy of the state.",
+                    "B) Response to Constructivism; they argue that ideas have no impact on material wealth.",
+                    "C) Response to Marxism; they advocate for the expansion of corporate capitalism.",
+                    "D) Response to Idealism; they promote unipolar military hegemony."
+                ],
+                answer: 0, // A
+                explanation: "Critical theories developed in response to mainstream theories (liberalism/realism), and Marxist-leaning critical theorists argue state legitimacy must be questioned and dissolved."
+            },
+            {
+                id: 31,
+                question: "Which theoretical perspective specifically seeks to provide a voice to individuals and groups historically marginalized, such as women and the Global South?",
+                options: [
+                    "A) Classical Realism",
+                    "B) Neoliberal Institutionalism",
+                    "C) Critical Theories",
+                    "D) Structural Realism"
+                ],
+                answer: 2, // C
+                explanation: "Critical theories identify positions typically ignored or overlooked in IR, providing a voice to marginalized groups like women and the Global South."
+            },
+            {
+                id: 32,
+                question: "In summary, how does Liberalism fundamentally characterize the prospects of resolving international conflict compared to Realism?",
+                options: [
+                    "A) Liberalism depicts optimism (cooperation is possible and conflict can be resolved peacefully), while Realism depicts pessimism (conflict is inevitable and war is the primary instrument).",
+                    "B) Liberalism depicts pessimism (human nature is inherently corrupt), while Realism depicts optimism (collective security guarantees absolute peace).",
+                    "C) Both theories agree that war is the only rational method for achieving state survival.",
+                    "D) Both theories dismiss human agency in favor of strict economic determinism."
+                ],
+                answer: 0, // A
+                explanation: "The summary section contrasts Liberalism (optimism, human nature good, cooperation possible) with Realism (pessimism, human nature bad, conflict inevitable)."
+            },
+            {
+                id: 33,
+                question: "How do Multinational Corporations (MNCs) fit into the taxonomy of actors in international relations?",
+                options: [
+                    "A) They are classified strictly as Intergovernmental Organizations (IGOs).",
+                    "B) They are classified as non-state (transnational) actors that engage in Foreign Direct Investments (FDI) and control value-added activities in multiple countries.",
+                    "C) They are considered formal legislative organs of the United Nations.",
+                    "D) They are treated as domestic non-governmental organizations with no international reach."
+                ],
+                answer: 1, // B
+                explanation: "MNCs are non-state (transnational) business enterprises that engage in Foreign Direct Investments (FDI) and control value-added activities in more than one country."
+            },
+            {
+                id: 34,
+                question: "When analyzing foreign policy decisions through the 'group level' of analysis, what specific phenomenon would a researcher examine?",
+                options: [
+                    "A) The distribution of nuclear warheads across global superpowers.",
+                    "B) The role of lobbying groups and how they influence national decision-making on specific issues.",
+                    "C) The psychological childhood trauma of individual heads of state.",
+                    "D) The broad historical evolution of the capitalist mode of production."
+                ],
+                answer: 1, // B
+                explanation: "Group-level analysis focuses on interest groups, looking at foreign policy through elements like domestic lobbying groups and their influence on state decisions."
+            },
+            {
+                id: 35,
+                question: "What was the primary conflict driving the Thirty Years' War (1618–1648), which ended with the Peace of Westphalia?",
+                options: [
+                    "A) A global economic depression caused by the collapse of trade monopolies.",
+                    "B) A military confrontation concerning European hegemony, intersecting with Catholic and Protestant religious conflicts.",
+                    "C) A series of democratic revolutions modeled after the French Revolution.",
+                    "D) A dispute over colonial territories in North America between Britain and France."
+                ],
+                answer: 1, // B
+                explanation: "The Thirty Years' War was the bloodiest military confrontation of the era, concerning European hegemony between Catholic and Protestant believers."
+            },
+            {
+                id: 36,
+                question: "In international relations terminology, what does the term 'inter-national' strictly denote?",
+                options: [
+                    "A) Interactions occurring exclusively within the domestic borders of a single state.",
+                    "B) Interactions and communications between countries regardless of national boundaries, where primary actors are sovereign states.",
+                    "C) Trade agreements brokered exclusively by non-governmental charitable organizations.",
+                    "D) The legal dissolution of national borders in favor of a single global government."
+                ],
+                answer: 1, // B
+                explanation: "'Inter-' means between/among, and 'national' refers to sovereign states; thus, inter-national refers to communication and interaction between countries across boundaries."
+            },
+            {
+                id: 37,
+                question: "Which of the following best defines 'Nationalism' as presented in Chapter One?",
+                options: [
+                    "A) A legal framework that abolishes national sovereignty in favor of corporate governance.",
+                    "B) An idea and movement promoting a particular nation's interests, aiming to gain and maintain sovereignty over its homeland.",
+                    "C) An economic doctrine focused exclusively on maximizing the profits of the international bourgeoisie.",
+                    "D) A religious hierarchical order governing medieval European principalities."
+                ],
+                answer: 1, // B
+                explanation: "Nationalism is defined as an idea and movement that promotes the interests of a nation, aiming to gain and maintain sovereignty (self-governance) over its homeland."
+            },
+            {
+                id: 38,
+                question: "How do structuralists/Marxists view the primary mechanism of global inequality and exploitation?",
+                options: [
+                    "A) Through cultural misunderstandings and lack of psychological communication among leaders.",
+                    "B) Through the international division of labor, which creates structures of dependency between developed and weak states.",
+                    "C) Through the absence of democratic elections in developing nations.",
+                    "D) Through the lack of collective security treaties within the UN Security Council."
+                ],
+                answer: 1, // B
+                explanation: "Structuralism/Marxism focuses on the structure of dependency and exploitation caused by the international division of labor."
+            },
+            {
+                id: 39,
+                question: "Which of the following accurately contrasts International Non-Governmental Organizations (INGOs) with Intergovernmental Organizations (IGOs)?",
+                options: [
+                    "A) INGOs are nonprofit private organizations engaging in international activities, whereas IGOs have national governments as their members.",
+                    "B) INGOs possess sovereign military forces, whereas IGOs are strictly corporate business enterprises.",
+                    "C) IGOs operate only within a single state, whereas INGOs are official organs of the UN General Assembly.",
+                    "D) There is no structural distinction; both terms are used interchangeably in IR."
+                ],
+                answer: 0, // A
+                explanation: "IGOs are institutions whose members are national governments, whereas INGOs are non-profit private organizations (e.g., Amnesty International, Red Cross)."
+            },
+            {
+                id: 40,
+                question: "When examining the structural distribution of power, what key feature distinguishes a unipolar system from bipolar and multipolar systems?",
+                options: [
+                    "A) There are zero sovereign states in a unipolar system.",
+                    "B) There is one state with the greatest political, economic, cultural, and military power, giving it the ability to totally control other states.",
+                    "C) Power is perfectly distributed equally among all recognized countries.",
+                    "D) All states operate under a centralized global parliament."
+                ],
+                answer: 1, // B
+                explanation: "In a unipolar system, one state possesses preponderant power and military/economic capabilities to totally control other states."
+            },
+            {
+                id: 41,
+                question: "What intellectual puzzle monopolized the interest of historians regarding World War I at the time of IR's academic formation?",
+                options: [
+                    "A) The puzzle of how and why World War I began, prompting academic IR to understand and prevent conflict.",
+                    "B) How multinational corporations financed the Treaty of Westphalia.",
+                    "C) How constructivist norms successfully prevented the Thirty Years' War.",
+                    "D) How the global working class overthrew European monarchies in 1914."
+                ],
+                answer: 0, // A
+                explanation: "Historians were monopolized by the puzzle of how and why WWI began, leading to IR being created as a discipline to understand and prevent wars."
+            },
+            {
+                id: 42,
+                question: "Which statement accurately reflects the realist perspective on international law and institutions?",
+                options: [
+                    "A) International law is the supreme governing mechanism that guarantees perpetual peace.",
+                    "B) States participate in international organizations and respect international law only when it serves their national self-interest.",
+                    "C) International organizations completely replace sovereign states as primary global actors.",
+                    "D) International law eliminates the anarchic nature of the global system."
+                ],
+                answer: 1, // B
+                explanation: "Realists argue that states partake in international organizations only when it is in their self-interest to do so."
+            },
+            {
+                id: 43,
+                question: "What role do domestic gaps and needs play in the formulation of International Relations, according to Chapter One?",
+                options: [
+                    "A) They are completely irrelevant because foreign policy is dictated entirely by global markets.",
+                    "B) They serve as the foundational basis of IR, as states interact internationally to fulfill domestic gaps in security, economic, and social spheres.",
+                    "C) They cause states to isolate themselves entirely through strict economic autarky.",
+                    "D) They trigger the immediate dissolution of sovereign states into regional federations."
+                ],
+                answer: 1, // B
+                explanation: "The slide explicitly highlights: 'domestic gaps and needs are basis of IR' because sovereign states need relations to fulfill unaddressed domestic needs."
+            },
+            {
+                id: 44,
+                question: "Which concept is defined as a situation where power is decentralized and there are no shared institutions with the right to enforce common rules?",
+                options: [
+                    "A) Sovereignty",
+                    "B) Anarchy",
+                    "C) Autarky",
+                    "D) Hegemony"
+                ],
+                answer: 1, // B
+                explanation: "Anarchy between states refers to a decentralized political structure without shared authority or enforcing institutions."
+            },
+            {
+                id: 45,
+                question: "How does the liberal tradition view the relationship between free trade and war?",
+                options: [
+                    "A) Free trade promotes economic self-sufficiency (autarky) which leads directly to war.",
+                    "B) Free trade is preferred over autarky because economic interdependence helps eliminate war and foster peace.",
+                    "C) Free trade is a capitalist tool of exploitation used by the bourgeoisie.",
+                    "D) Free trade has no bearing on international peace or conflict."
+                ],
+                answer: 1, // B
+                explanation: "Liberals argue that free trade over autarky (economic self-sufficiency) builds interdependence, reducing incentives for war."
+            },
+            {
+                id: 46,
+                question: "Which statement accurately reflects the constructivist view of state interests?",
+                options: [
+                    "A) State interests are fixed, immutable, and entirely determined by military power.",
+                    "B) State interests are shaped by social identities, ideas, norms, and culture rather than being strictly pre-given by material structures.",
+                    "C) State interests are exclusively dictated by corporate profit motives.",
+                    "D) State interests do not exist in an anarchic system."
+                ],
+                answer: 1, // B
+                explanation: "Constructivism highlights that state behavior and identity are created by bodies of thought, social norms, and interactive ideas."
+            },
+            {
+                id: 47,
+                question: "In the context of international system structures, what characterizes a multipolar system?",
+                options: [
+                    "A) A single superpower dominating all international financial institutions.",
+                    "B) Two opposing ideological blocs engaged in a zero-sum arms race.",
+                    "C) Various equally powerful states competing for power, where systemic change can occur without gaining or losing absolute power.",
+                    "D) The complete absence of states and the governance of society by NGOs."
+                ],
+                answer: 2, // C
+                explanation: "A multipolar system reflects various equally powerful states competing, allowing systemic adjustments without simple zero-sum losses."
+            },
+            {
+                id: 48,
+                question: "Which theoretical approach in IR explicitly challenges mainstream perspectives by questioning state legitimacy and bringing forward marginalized perspectives?",
+                options: [
+                    "A) Neorealism",
+                    "B) Neoliberal Institutionalism",
+                    "C) Critical Theories",
+                    "D) Classical Realism"
+                ],
+                answer: 2, // C
+                explanation: "Critical theories challenge dominant liberal/realist assumptions, questioning state legitimacy and advocating for marginalized voices."
+            },
+            {
+                id: 49,
+                question: "According to Jeremy Bentham's historical usage in 1798, what did the term 'International Relations' originally study?",
+                options: [
+                    "A) The religious hierarchy of the medieval Catholic Church.",
+                    "B) The political, social, and economic relationships among the world’s nations, especially between national governments.",
+                    "C) The internal domestic police operations of sovereign city-states.",
+                    "D) The corporate management structures of early trading monopolies."
+                ],
+                answer: 1, // B
+                explanation: "Jeremy Bentham first used the term in 1798 to describe political, social, and economic relationships between national governments."
+            },
+            {
+                id: 50,
+                question: "Which of the following best summarizes the fundamental disagreement between Realism and Liberalism regarding the attainability of peace?",
+                options: [
+                    "A) Realism views peace as a permanent natural condition, whereas Liberalism views peace as a temporary illusion.",
+                    "B) Realism views peace as a temporary state achieved when states prepare for future conflict, whereas Liberalism views peace as achievable and desirable through cooperation, democracy, and law.",
+                    "C) Both theories agree that peace can only be maintained by eliminating national borders.",
+                    "D) Both theories reject cooperation as a viable strategy for state survival."
+                ],
+                answer: 1, // B
+                explanation: "Realism views peace as temporary preparations for future conflict (pessimistic), while Liberalism holds that perpetual peace can be established through democratic values, trade, and institutions (optimistic)."
+            }
+        ];
+
+        // App State Variables
+        let userAnswers = new Array(questionsData.length).fill(null);
+        let checkedStatus = new Array(questionsData.length).fill(false);
+        let currentIndex = 0;
+        let isFullViewMode = false;
+
+        // Initialize Application
+        window.onload = function() {
+            renderQuestionMatrix();
+            loadSingleQuestion(currentIndex);
+            renderFullListView();
+            updateStats();
+        };
+
+        // Render Sidebar Matrix Grid
+        function renderQuestionMatrix() {
+            const container = document.getElementById('question-matrix');
+            container.innerHTML = '';
+
+            questionsData.forEach((q, idx) => {
+                const btn = document.createElement('button');
+                btn.id = `matrix-btn-${idx}`;
+                btn.className = `h-8 text-xs font-semibold rounded-lg border transition flex items-center justify-center ${getMatrixStyle(idx)}`;
+                btn.innerText = idx + 1;
+                btn.onclick = () => jumpToQuestion(idx);
+                container.appendChild(btn);
+            });
+        }
+
+        function getMatrixStyle(idx) {
+            if (idx === currentIndex && !isFullViewMode) {
+                return 'bg-brand-600 text-white border-brand-700 ring-2 ring-brand-300';
+            }
+            if (userAnswers[idx] !== null) {
+                if (checkedStatus[idx]) {
+                    return userAnswers[idx] === questionsData[idx].answer 
+                        ? 'bg-emerald-500 text-white border-emerald-600' 
+                        : 'bg-rose-500 text-white border-rose-600';
+                }
+                return 'bg-brand-100 text-brand-800 border-brand-200';
+            }
+            return 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100';
+        }
+
+        // Load Single Question View
+        function loadSingleQuestion(index) {
+            currentIndex = index;
+            const q = questionsData[index];
+
+            document.getElementById('q-badge').innerText = `Question ${index + 1} of ${questionsData.length}`;
+            document.getElementById('q-text').innerText = `${q.id}. ${q.question}`;
+            
+            const optionsContainer = document.getElementById('q-options');
+            optionsContainer.innerHTML = '';
+
+            q.options.forEach((opt, optIdx) => {
+                const isSelected = userAnswers[index] === optIdx;
+                const isChecked = checkedStatus[index];
+                const isCorrect = optIdx === q.answer;
+
+                let stateClasses = 'bg-white border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700';
+
+                if (isSelected) {
+                    stateClasses = 'bg-brand-50 border-brand-500 text-brand-900 font-medium ring-1 ring-brand-500';
+                }
+
+                if (isChecked) {
+                    if (isCorrect) {
+                        stateClasses = 'bg-emerald-50 border-emerald-500 text-emerald-900 font-medium ring-1 ring-emerald-500';
+                    } else if (isSelected) {
+                        stateClasses = 'bg-rose-50 border-rose-500 text-rose-900 font-medium ring-1 ring-rose-500';
+                    }
+                }
+
+                const optElement = document.createElement('div');
+                optElement.className = `p-4 rounded-xl border text-sm cursor-pointer transition flex items-start gap-3 ${stateClasses}`;
+                optElement.onclick = () => selectOption(index, optIdx);
+
+                optElement.innerHTML = `
+                    <div class="mt-0.5 w-4 h-4 rounded-full border flex items-center justify-center shrink-0 ${isSelected ? 'border-brand-600 bg-brand-600 text-white' : 'border-slate-300 bg-white'}">
+                        ${isSelected ? '<i class="fa-solid fa-check text-[9px]"></i>' : ''}
+                    </div>
+                    <span class="flex-1">${opt}</span>
+                    ${isChecked && isCorrect ? '<i class="fa-solid fa-circle-check text-emerald-600 text-base"></i>' : ''}
+                    ${isChecked && isSelected && !isCorrect ? '<i class="fa-solid fa-circle-xmark text-rose-600 text-base"></i>' : ''}
+                `;
+                optionsContainer.appendChild(optElement);
+            });
+
+            // Update Explanation Box
+            const expBox = document.getElementById('explanation-box');
+            const expStatus = document.getElementById('explanation-status');
+            const expText = document.getElementById('explanation-text');
+
+            if (checkedStatus[index]) {
+                expBox.classList.remove('hidden');
+                expText.innerText = q.explanation;
+
+                if (userAnswers[index] === q.answer) {
+                    expBox.className = 'mt-6 p-5 rounded-xl border bg-emerald-50 border-emerald-200 text-emerald-900 text-sm leading-relaxed';
+                    expStatus.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-600"></i> Correct Answer!';
+                } else {
+                    expBox.className = 'mt-6 p-5 rounded-xl border bg-rose-50 border-rose-200 text-rose-900 text-sm leading-relaxed';
+                    expStatus.innerHTML = '<i class="fa-solid fa-triangle-exclamation text-rose-600"></i> Incorrect. Review Explanation:';
+                }
+            } else {
+                expBox.classList.add('hidden');
+            }
+
+            // Controls state
+            document.getElementById('prev-btn').disabled = (index === 0);
+            document.getElementById('next-btn').disabled = (index === questionsData.length - 1);
+            
+            renderQuestionMatrix();
+        }
+
+        // Option Selection Event
+        function selectOption(qIdx, optIdx) {
+            if (checkedStatus[qIdx] && !isFullViewMode) return; // Prevent changing after confirmed unless reset
+
+            userAnswers[qIdx] = optIdx;
+            
+            if (!isFullViewMode) {
+                loadSingleQuestion(qIdx);
+            } else {
+                renderFullListView();
+            }
+            updateStats();
+        }
+
+        // Confirm / Check Current Answer (Single View)
+        function checkCurrentAnswer() {
+            if (userAnswers[currentIndex] === null) {
+                alert('Please select an answer choice before confirming.');
+                return;
+            }
+            checkedStatus[currentIndex] = true;
+            loadSingleQuestion(currentIndex);
+            updateStats();
+        }
+
+        // Navigation Controls
+        function navigateQuestion(direction) {
+            const newIndex = currentIndex + direction;
+            if (newIndex >= 0 && newIndex < questionsData.length) {
+                loadSingleQuestion(newIndex);
+            }
+        }
+
+        function jumpToQuestion(index) {
+            if (isFullViewMode) {
+                toggleViewMode();
+            }
+            loadSingleQuestion(index);
+        }
+
+        // Render Full List View Mode
+        function renderFullListView() {
+            const wrapper = document.getElementById('full-list-wrapper');
+            wrapper.innerHTML = '';
+
+            questionsData.forEach((q, qIdx) => {
+                const card = document.createElement('div');
+                card.className = 'bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4';
+
+                let optionsHTML = '';
+                q.options.forEach((opt, optIdx) => {
+                    const isSelected = userAnswers[qIdx] === optIdx;
+                    const isChecked = checkedStatus[qIdx];
+                    const isCorrect = optIdx === q.answer;
+
+                    let stateClasses = 'bg-white border-slate-200 text-slate-700';
+                    if (isSelected) stateClasses = 'bg-brand-50 border-brand-500 font-medium text-brand-900';
+                    if (isChecked && isCorrect) stateClasses = 'bg-emerald-50 border-emerald-500 font-medium text-emerald-900';
+                    if (isChecked && isSelected && !isCorrect) stateClasses = 'bg-rose-50 border-rose-500 font-medium text-rose-900';
+
+                    optionsHTML += `
+                        <div onclick="selectOption(${qIdx}, ${optIdx})" class="p-3.5 rounded-xl border text-sm cursor-pointer transition flex items-center justify-between ${stateClasses}">
+                            <span>${opt}</span>
+                            ${isSelected ? '<i class="fa-solid fa-check text-brand-600"></i>' : ''}
+                        </div>
+                    `;
+                });
+
+                let explanationHTML = '';
+                if (checkedStatus[qIdx]) {
+                    explanationHTML = `
+                        <div class="mt-4 p-4 rounded-xl border bg-slate-50 border-slate-200 text-xs text-slate-700 space-y-1">
+                            <span class="font-bold text-slate-900 block">Explanation:</span>
+                            <p>${q.explanation}</p>
+                        </div>
+                    `;
+                }
+
+                card.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <span class="px-2.5 py-0.5 bg-slate-100 text-slate-600 font-bold text-xs rounded-full">Question ${qIdx + 1}</span>
+                        ${checkedStatus[qIdx] ? (userAnswers[qIdx] === q.answer ? '<span class="text-xs text-emerald-600 font-bold"><i class="fa-solid fa-check"></i> Correct</span>' : '<span class="text-xs text-rose-600 font-bold"><i class="fa-solid fa-xmark"></i> Incorrect</span>') : ''}
+                    </div>
+                    <h3 class="text-base font-bold text-slate-900">${q.question}</h3>
+                    <div class="space-y-2">${optionsHTML}</div>
+                    ${explanationHTML}
+                `;
+                wrapper.appendChild(card);
+            });
+        }
+
+        // Toggle View Mode (Single vs Full List)
+        function toggleViewMode() {
+            isFullViewMode = !isFullViewMode;
+            const singleContainer = document.getElementById('single-view-container');
+            const fullContainer = document.getElementById('full-view-container');
+            const label = document.getElementById('view-mode-label');
+
+            if (isFullViewMode) {
+                singleContainer.classList.add('hidden');
+                fullContainer.classList.remove('hidden');
+                label.innerText = 'Switch to Step-by-Step';
+                renderFullListView();
+            } else {
+                fullContainer.classList.add('hidden');
+                singleContainer.classList.remove('hidden');
+                label.innerText = 'Switch to Full List';
+                loadSingleQuestion(currentIndex);
+            }
+        }
+
+        // Update Stats & Counters
+        function updateStats() {
+            let answeredCount = 0;
+            let correctCount = 0;
+            let incorrectCount = 0;
+
+            userAnswers.forEach((ans, idx) => {
+                if (ans !== null) {
+                    answeredCount++;
+                    if (checkedStatus[idx]) {
+                        if (ans === questionsData[idx].answer) {
+                            correctCount++;
+                        } else {
+                            incorrectCount++;
+                        }
+                    }
+                }
+            });
+
+            const percent = Math.round((answeredCount / questionsData.length) * 100);
+            
+            document.getElementById('progress-percent').innerText = `${percent}%`;
+            document.getElementById('progress-count').innerText = `${answeredCount} of ${questionsData.length} answered`;
+            document.getElementById('progress-bar').style.width = `${percent}%`;
+
+            document.getElementById('correct-counter').innerText = correctCount;
+            document.getElementById('incorrect-counter').innerText = incorrectCount;
+            document.getElementById('score-header').innerText = `${correctCount} / ${questionsData.length}`;
+
+            renderQuestionMatrix();
+        }
+
+        // Submit Full Exam
+        function submitExam() {
+            const unanswered = userAnswers.filter(a => a === null).length;
+            if (unanswered > 0) {
+                if (!confirm(`You still have ${unanswered} unanswered question(s). Are you sure you want to finalize and submit?`)) {
+                    return;
+                }
+            }
+
+            // Mark all answered items as checked to show explanations
+            checkedStatus = checkedStatus.map((_, idx) => userAnswers[idx] !== null);
+
+            let score = 0;
+            userAnswers.forEach((ans, idx) => {
+                if (ans === questionsData[idx].answer) score++;
+            });
+
+            const finalPercent = Math.round((score / questionsData.length) * 100);
+
+            // Hide containers and show scorecard
+            document.getElementById('single-view-container').classList.add('hidden');
+            document.getElementById('full-view-container').classList.add('hidden');
+            const resultsCard = document.getElementById('results-card');
+            resultsCard.classList.remove('hidden');
+
+            document.getElementById('final-score').innerText = `${score}/50`;
+            document.getElementById('final-percent').innerText = `${finalPercent}%`;
+            
+            const statusElem = document.getElementById('final-status');
+            const feedbackElem = document.getElementById('performance-feedback');
+
+            if (finalPercent >= 75) {
+                statusElem.innerText = 'EXCELLENT';
+                statusElem.className = 'text-2xl font-black text-emerald-600';
+                feedbackElem.innerText = 'Outstanding grasp of Chapter One IR concepts, theoretical models, and historical foundations!';
+            } else if (finalPercent >= 50) {
+                statusElem.innerText = 'PASS';
+                statusElem.className = 'text-2xl font-black text-brand-600';
+                feedbackElem.innerText = 'Good performance. Consider reviewing Realist, Liberal, and Constructivist comparative assumptions.';
+            } else {
+                statusElem.innerText = 'NEEDS REVIEW';
+                statusElem.className = 'text-2xl font-black text-rose-600';
+                feedbackElem.innerText = 'We recommend carefully re-reading Chapter One slides on Levels of Analysis and Theoretical Frameworks.';
+            }
+
+            updateStats();
+        }
+
+        // Review Answers post-submission
+        function reviewExamAnswers() {
+            document.getElementById('results-card').classList.add('hidden');
+            isFullViewMode = false;
+            toggleViewMode(); // Open full list with all answers & explanations revealed
+        }
+
+        // Reset Quiz State
+        function resetQuiz() {
+            if (confirm('Are you sure you want to restart the examination? All progress will be cleared.')) {
+                userAnswers = new Array(questionsData.length).fill(null);
+                checkedStatus = new Array(questionsData.length).fill(false);
+                currentIndex = 0;
+                isFullViewMode = false;
+
+                document.getElementById('results-card').classList.add('hidden');
+                document.getElementById('full-view-container').classList.add('hidden');
+                document.getElementById('single-view-container').classList.remove('hidden');
+                document.getElementById('view-mode-label').innerText = 'Switch to Full List';
+
+                loadSingleQuestion(0);
+                updateStats();
+            }
+        }
+    </script>
+</body>
+</html>
+```
